@@ -1,5 +1,5 @@
 import heapq
-from typing import Any, List, Optional
+from typing import List, Optional
 import game_message
 from game_message import Position
 
