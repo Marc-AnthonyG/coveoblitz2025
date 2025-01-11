@@ -99,7 +99,7 @@ def retrieve_closest_resource(character : game_message.Character, game_message_:
     
     if item is not None:
         if item.position == character.position:
-            return game_message.GrabAction(characterId=character.id), strategy_state.STACK_RESOURCES, None
+            return game_message.GrabAction(characterId=character.id), strategy_state.STACK_RESOURCES, item.position
         else:
             return game_message.MoveToAction(characterId=character.id, position=item.position), strategy_state.RETRIEVE_CLOSEST_RESOURCE, item.position
     return (None, strategy_state.PICKUP_TRASH, None)
