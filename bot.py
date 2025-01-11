@@ -1,4 +1,6 @@
 from typing import Dict
+
+from defense_strat import should_defense, defense
 from game_message import *
 from attack import choose_to_pickup_or_deposit
 import retrieve_closest_resource as rcr
@@ -34,11 +36,20 @@ class Bot:
         actions = []
 
         for character in game_message.yourCharacters:
-            if self.current_state[character.id] is None:
-                actions += choose_to_pickup_or_deposit(character, game_state=game_message)
-            else:
-                move, next_state = rcr.make_a_move(self.current_state[character.id], character, game_message)
-                self.current_state[character.id] = next_state
-                actions.append(move)
+            character_actions = []
+
+            if should_defense(character, game_message):
+                character_actions.append(defense(character, game_message))
+
+            if len(character_actions) == 0:
+                if self.current_state[character.id] is None:
+                    character_actions += choose_to_pickup_or_deposit(character, game_state=game_message)
+                else:
+                    move, next_state = rcr.make_a_move(self.current_state[character.id], character, game_message)
+                    self.current_state[character.id] = next_state
+                    character_actions.append(move)
+
+            actions.append(character_actions)
+
         # You can clearly do better than the random actions above! Have fun!
         return actions
