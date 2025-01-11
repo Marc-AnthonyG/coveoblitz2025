@@ -6,11 +6,6 @@ from attack import choose_to_pickup_or_deposit
 import retrieve_closest_resource as rcr
 from weighted_map import WeightedMap, construct_weighted_map
 
-FETCH_BLUE_INDEX = 1
-RETRIEVE_BLUE_INDEX = 2
-FETCH_RED_INDEX = 1
-SEND_RED_INDEX = 2
-DEFENCE_SKIN_INDEX = 5
 
 class Bot:
     def __init__(self):

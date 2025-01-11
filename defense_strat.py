@@ -1,6 +1,6 @@
 import random
 
-from bot import DEFENCE_SKIN_INDEX
+from skin_const import DEFENCE_SKIN_INDEX
 from game_message import Character, TeamGameState, TileType, SetSkinAction, MoveToAction, Position
 from util import is_in_our_zone
 
