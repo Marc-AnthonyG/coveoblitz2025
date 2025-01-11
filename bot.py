@@ -1,6 +1,6 @@
 from typing import Dict
 
-from defense_strat import should_defense, defense
+from defense_strat import can_tag_close_enemy, try_to_tag_close_enemy
 from game_message import *
 from attack import choose_to_pickup_or_deposit
 import retrieve_closest_resource as rcr
@@ -33,8 +33,8 @@ class Bot:
         for character in game_message.yourCharacters:
             character_actions = []
 
-            if should_defense(character, game_message):
-                character_actions += defense(character, game_message)
+            if can_tag_close_enemy(character, game_message):
+                character_actions += try_to_tag_close_enemy(character, game_message)
 
             if len(character_actions) == 0:
                 if self.current_state[character.id] is None:

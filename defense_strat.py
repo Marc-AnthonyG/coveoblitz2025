@@ -5,7 +5,7 @@ from game_message import Character, TeamGameState, TileType, SetSkinAction, Move
 from util import is_in_our_zone
 
 
-def should_defense(character: Character, game_message: TeamGameState) -> bool:
+def can_tag_close_enemy(character: Character, game_message: TeamGameState) -> bool:
     """
     This return True if the character can eat someone in the next turn
     """
@@ -18,7 +18,7 @@ def should_defense(character: Character, game_message: TeamGameState) -> bool:
         if abs(deltaX) <= 1 and abs(deltaY) <= 1:
             return True
 
-def defense(character: Character, game_message: TeamGameState):
+def try_to_tag_close_enemy(character: Character, game_message: TeamGameState):
     """
     This function try to decide how to move to eat the enemy
     """
