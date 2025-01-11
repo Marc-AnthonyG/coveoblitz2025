@@ -1,7 +1,8 @@
 import random
 from collections import deque
-from typing import List, Deque
+from typing import List, Deque, Optional
 
+import util
 from skin_const import DEFENCE_SKIN_INDEX
 from game_message import Character, TeamGameState, TileType, SetSkinAction, MoveToAction, Position, Action
 from util import is_in_our_zone
@@ -59,7 +60,7 @@ def try_to_tag_close_enemy(character: Character, game_message: TeamGameState) ->
         return [SetSkinAction(characterId=character.id, skinIndex=DEFENCE_SKIN_INDEX), MoveToAction(characterId=character.id, position=random_move)]
 
 
-def create_pair_of_intercepter(game_message: TeamGameState) -> None:
+def create_pair_of_intercepter(game_message: TeamGameState) -> list[Action]:
     """
     This function create a pair of intercepter
     """
@@ -69,31 +70,48 @@ def create_pair_of_intercepter(game_message: TeamGameState) -> None:
             if enemy.has_item:
                 enemy_with_resource_in_our_zone.append(enemy)
 
-    return
-    # for enemy in enemy_with_resource_in_our_zone:
+    list_of_actions = []
 
-def get(starting_position: Position, game_message: TeamGameState, teamId: str) -> Position:
+    for enemy in enemy_with_resource_in_our_zone:
+        exit_position, dist = get_exit_position(enemy.position, game_message, game_message.currentTeamId)
+        if exit_position is None:
+            continue
+
+        for character in game_message.yourCharacters:
+            if util.manhattan_distance(character.position, exit_position) <= dist:
+                a_star_dist = util.a_star(character.position, exit_position, game_message.map.tiles)
+                if a_star_dist is not None and a_star_dist <= dist:
+                    list_of_actions.append(MoveToAction(character.id, exit_position))
+                    continue
+
+    return list_of_actions
+
+def get_exit_position(starting_position: Position, game_message: TeamGameState, goalTeamId: str, ) -> tuple[Optional[Position], int]:
     """
     Return the exit position of the bot
     """
-    queue: Deque[Position] = deque([starting_position])
+    starting_team_id = game_message.teamZoneGrid[starting_position.x][starting_position.y]
+    queue: Deque[tuple[Position, Optional[Position], int]] = deque([(starting_position, None, 0)]) # (Position, exit_position | None, dist)
     visited = {starting_position}
     directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 
     while queue:
-        current_position = queue.popleft()
+        current_position, exit_position, dist = queue.popleft()
         x = current_position.x
         y = current_position.y
 
-        # Stop searching if we've moved more than 3 turns
-        if game_message.teamZoneGrid[x][y] == teamId:
-            continue
+        # Stop searching when you get to enemy zone
+        if game_message.teamZoneGrid[x][y] == goalTeamId:
+            return exit_position, dist
 
         # Explore adjacent tiles
         for dx, dy in directions:
             nx, ny = x + dx, y + dy
             if game_message.map.tiles[nx][ny] != TileType.WALL:
-                visited.add((nx, ny))
-                queue.append((nx, ny, dist + 1))
+                visited.add(Position(nx, ny))
+                if game_message.teamZoneGrid[nx][ny] != starting_team_id:
+                    queue.append((Position(nx, ny), current_position, dist+1))
+                else:
+                    queue.append((Position(nx, ny), exit_position, dist+1))
 
-    return visited
+    return None, 0
