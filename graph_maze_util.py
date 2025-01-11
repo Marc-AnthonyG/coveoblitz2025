@@ -38,7 +38,7 @@ def explore_path(start: Position,
     queue = deque([(start, 0)])  # (position, distance)
     connected_nodes = []
 
-    while queue:
+    while len(queue) > 0:
         pos, dist = queue.popleft()
         if pos != start and pos in nodes:
             connected_nodes.append((pos, dist))

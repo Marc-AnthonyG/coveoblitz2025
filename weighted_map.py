@@ -33,7 +33,7 @@ def construct_weighted_map(game_message: TeamGameState) -> WeightedMap:
         visited = {(start_x, start_y)}
         accessible_tiles = 0
 
-        while queue:
+        while len(queue) > 0:
             x, y, dist = queue.popleft()
 
             # Stop searching if we've moved more than 3 turns
