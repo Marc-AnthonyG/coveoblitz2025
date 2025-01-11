@@ -17,8 +17,8 @@ class Bot:
         print("Initializing your super mega duper bot")
 
     def get_next_move(self, game_message: TeamGameState):
-        # if not self.weight_map:
-        #     self.weight_map = construct_weighted_map(game_message)
+        if not self.weight_map:
+            self.weight_map = construct_weighted_map(game_message)
 
         if (len(self.current_state) == 0):
             for i, character in enumerate(game_message.yourCharacters):
