@@ -71,8 +71,7 @@ def is_tile_from_our_zone(position : game_message.Position, game_message_: game_
     return game_message_.teamZoneGrid[position.x][position.y] == game_message_.currentTeamId
      
 def find_distance(position1 : game_message.Position, position2 : game_message.Position, game_message_: game_message.TeamGameState)->Optional[float]:
-    return ((position1.x - position2.x)**2 + (position1.y - position2.y)**2)**0.5
-    # return util.a_star(position1, position2, game_message_.map.tiles)
+    return util.a_star(position1, position2, game_message_.map.tiles)
 
 def should_car_go_back_home(character : game_message.Character, game_message_: game_message.TeamGameState)->bool:
     if (character.numberOfCarriedItems == 0):

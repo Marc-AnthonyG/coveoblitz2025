@@ -33,6 +33,15 @@ class Position:
     y: int
     """Y coordinate of the position. 0 is the top row."""
 
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+
+    def __lt__(self, other):
+        return False
+
+    def __hash__(self):
+        return hash((self.x, self.y))
+
 
 @dataclass_json
 @dataclass

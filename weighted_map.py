@@ -36,8 +36,8 @@ def construct_weighted_map(game_message: TeamGameState) -> WeightedMap:
         while queue:
             x, y, dist = queue.popleft()
 
-            # Stop searching if we've moved more than 10 turns
-            if dist >= 10:
+            # Stop searching if we've moved more than 3 turns
+            if dist >= 3:
                 continue
 
             # Explore adjacent tiles
@@ -67,9 +67,9 @@ def construct_weighted_map(game_message: TeamGameState) -> WeightedMap:
         for y in range(height):
             if map[x][y] != TileType.WALL:
                 weighted_map_normilize[x][y] = (
-                        0.22  # Base weight
-                        + 0.78 * ((reachable_map_count[x][y] - min_reachable_tiles) / (
-                        max_reachable_tiles - min_reachable_tiles))  # Reachable tiles weight
+                    0.01  # Base weight
+                    + 0.99 * ((reachable_map_count[x][y] - min_reachable_tiles) / (
+                    max_reachable_tiles - min_reachable_tiles))  # Reachable tiles weight
                 )
 
 
