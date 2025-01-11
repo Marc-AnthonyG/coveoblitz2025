@@ -2,7 +2,7 @@ from enum import Enum
 from typing import Optional, Tuple
 import game_message
 import util
-
+import random
 class strategy_state(Enum):
     RETRIEVE_CLOSEST_RESOURCE = 1
     STACK_RESOURCES = 2
@@ -45,24 +45,6 @@ def find_closest_resource(character : game_message.Character, game_message_: gam
 
 def compute_resource_value(distance_to_car : float, resource_value : int, game_message_: game_message.TeamGameState)->float:
     return -distance_to_car
-
-def sum_adjactent_resources(position : game_message.Position, game_message_: game_message.TeamGameState)->int:
-    min_x : int = max(0, position.x - 1)
-    max_x : int = min(game_message_.map.width, position.x + 1)
-    min_y : int = max(0, position.y - 1)
-    max_y : int = min(game_message_.map.height, position.y + 1)
-    sum_ : int = 0
-    #check adjactent tiles
-    for x in range(min_x, max_x):
-        for y in range(min_y, max_y):
-            if is_tile_empty(game_message.Position(x,y), game_message_):
-                continue
-            for item in game_message_.items:
-                if item.type[0] != "b":
-                    continue
-                if item.position == position:
-                    sum_ += item.value
-    return sum_
 
 def is_tile_from_our_zone(position : game_message.Position, game_message_: game_message.TeamGameState)->bool:
     return game_message_.teamZoneGrid[position.x][position.y] == game_message_.currentTeamId
@@ -114,7 +96,7 @@ def find_closest_available_teamtile(character : game_message.Character, game_mes
             if not is_tile_from_our_zone(position=tile_position, game_message_=game_message_):
                 continue
             
-            if not is_tile_empty(tile_position, game_message_):
+            if not is_tile_empty(tile_position, game_message_, character.id):
                 continue
             
             dist : Optional[float] = find_distance(current_position, tile_position, game_message_)
@@ -123,11 +105,16 @@ def find_closest_available_teamtile(character : game_message.Character, game_mes
                 closest_teamtile = tile_position
     return closest_teamtile
 
-def is_tile_empty(position : game_message.Position, game_message_: game_message.TeamGameState)->bool:
+def is_tile_empty(position : game_message.Position, game_message_: game_message.TeamGameState, id :str)->bool:
     is_wall : bool = game_message_.map.tiles[position.x][position.y].value == "WALL"
     if (is_wall):
         return False
     
+    for friendly_character in game_message_.yourCharacters:
+        if friendly_character.id == id:
+            continue
+        if friendly_character.position == position:
+            return random.choice([True, False])
     for item in game_message_.items:
         if item.position == position:
             return False

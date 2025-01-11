@@ -46,7 +46,7 @@ def pickupTrash(bot, character: Character, game_state: TeamGameState) -> Tuple[L
 
 def depositTrash(bot, character: Character, game_state: TeamGameState) -> Tuple[List[Action], Optional[Position]]:
     if is_in_enemies_zone(game_state.teamIds, game_state.currentTeamId, character.position, game_state.teamZoneGrid) and \
-        is_tile_empty(character.position, game_state):
+        is_tile_empty(character.position, game_state, character.id):
         if len(character.carriedItems) == 1:
             bot.current_state[character.id] = strategy_state.RETRIEVE_CLOSEST_RESOURCE
         return [DropAction(character.id)], None
@@ -59,7 +59,7 @@ def depositTrash(bot, character: Character, game_state: TeamGameState) -> Tuple[
 
     while queue:
         current_position = queue.popleft()
-        if is_in_enemies_zone(game_state.teamIds, game_state.currentTeamId, current_position, game_state.teamZoneGrid) and is_tile_empty(current_position, game_state):
+        if is_in_enemies_zone(game_state.teamIds, game_state.currentTeamId, current_position, game_state.teamZoneGrid) and is_tile_empty(current_position, game_state, character.id):
             return [MoveToAction(character.id, Position(current_position.x, current_position.y))], current_position
         adjacent_positions = [
                 Position(current_position.x + 1, current_position.y),
