@@ -138,8 +138,8 @@ def bring_resource_to_base(character : game_message.Character, game_message_: ga
     if position is not None:
         if (position == character.position):
             if (character.numberOfCarriedItems == 1):
-                return game_message.DropAction(characterId=character.id), strategy_state.PICKUP_TRASH, None          
-            return game_message.DropAction(characterId=character.id), strategy_state.BRING_RESOURCE_TO_BASE, None
+                return game_message.DropAction(characterId=character.id), strategy_state.PICKUP_TRASH, position          
+            return game_message.DropAction(characterId=character.id), strategy_state.BRING_RESOURCE_TO_BASE, position
         else:
             return game_message.MoveToAction(characterId=character.id, position=position), strategy_state.BRING_RESOURCE_TO_BASE, position
     else:

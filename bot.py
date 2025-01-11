@@ -53,12 +53,21 @@ class Bot:
                 if self.current_state[character.id] == rcr.strategy_state.PICKUP_TRASH or self.current_state[character.id] == rcr.strategy_state.DEPOSIT_TRASH:
                     moves, target_position = choose_to_pickup_or_deposit(self, character, game_state=game_message)
                     character_actions+= moves
+                    item_to_remove : Optional[Item] = None
+                    if (target_position is not None):
+                        for trash in game_message.items:
+                            if trash.position == target_position:
+                                item_to_remove = trash
+                        
+                        if item_to_remove is not None:
+                            game_message.items.remove(item_to_remove)
                                         
                 else:
                     move, next_state, target_position = rcr.make_a_move(self.current_state[character.id], character, game_message)
                     self.current_state[character.id] = next_state
                     if move is None:
-                        choose_to_pickup_or_deposit(self, character, game_message)
+                        moves, target_position = choose_to_pickup_or_deposit(self, character, game_message)
+                        character_actions+= moves
                     if (target_position is not None):
                         item_to_remove : Optional[Item] = None
                         for resource in game_message.items:
@@ -68,8 +77,8 @@ class Bot:
                         if item_to_remove is not None:
                             game_message.items.remove(item_to_remove)
                     self.target_position_per_character[character.id] = target_position
-                            
-                    character_actions.append(move)
+                    if move is not None:
+                        character_actions.append(move)
 
             actions += character_actions
 
