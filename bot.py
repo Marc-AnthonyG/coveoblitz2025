@@ -20,7 +20,7 @@ class Bot:
         if (len(self.current_state) == 0):
             for i, character in enumerate(game_message.yourCharacters):
                 if i % 2 == 1:
-                    self.current_state[character.id] = None
+                    self.current_state[character.id] = rcr.strategy_state.PICKUP_TRASH
                 else:
                     self.current_state[character.id] = rcr.strategy_state.RETRIEVE_CLOSEST_RESOURCE
                 
@@ -38,7 +38,7 @@ class Bot:
 
             if len(character_actions) == 0:
                 if self.current_state[character.id] is None:
-                    character_actions += choose_to_pickup_or_deposit(character, game_state=game_message)
+                    character_actions += choose_to_pickup_or_deposit(self, character, game_state=game_message)
                 else:
                     move, next_state = rcr.make_a_move(self.current_state[character.id], character, game_message)
                     self.current_state[character.id] = next_state

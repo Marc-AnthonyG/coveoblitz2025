@@ -7,6 +7,8 @@ class strategy_state(Enum):
     RETRIEVE_CLOSEST_RESOURCE = 1
     STACK_RESOURCES = 2
     BRING_RESOURCE_TO_BASE = 3
+    PICKUP_TRASH = 4
+    DEPOSIT_TRASH = 5
         
     
 def make_a_move(current_state : strategy_state, character : game_message.Character, game_message_: game_message.TeamGameState)->Tuple[Optional[game_message.Action], strategy_state]:
