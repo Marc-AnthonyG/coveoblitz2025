@@ -1,7 +1,7 @@
 import random
 from typing import Dict
 from game_message import *
-from attack import pickupTrash
+from attack import choose_to_pickup_or_deposit
 import retrieve_closest_resource as rcr
 
 
@@ -19,11 +19,11 @@ class Bot:
         Here is where the magic happens, for now the moves are not very good. I bet you can do better ;)
         """
         actions = []
-        
+        actions += choose_to_pickup_or_deposit(game_message.yourCharacters[0], game_state=game_message)
 
-        for character in game_message.yourCharacters:
-            move, next_state = rcr.make_a_move(self.current_state[character.id], character, game_message)
-            self.current_state[character.id] = next_state
-            actions.append(move)
+        # for character in game_message.yourCharacters:
+        #     move, next_state = rcr.make_a_move(self.current_state[character.id], character, game_message)
+        #     self.current_state[character.id] = next_state
+        #     actions.append(move)
         # You can clearly do better than the random actions above! Have fun!
         return actions
