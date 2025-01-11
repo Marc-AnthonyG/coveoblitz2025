@@ -44,7 +44,7 @@ class Bot:
                     self.current_state[character.id] = next_state
                     character_actions.append(move)
 
-            actions.append(character_actions)
+            actions += character_actions
 
         # You can clearly do better than the random actions above! Have fun!
         return actions
