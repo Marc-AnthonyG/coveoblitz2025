@@ -82,5 +82,6 @@ class Bot:
 
             actions += character_actions
 
+        print(f"Actions: {actions}")
         # You can clearly do better than the random actions above! Have fun!
         return actions
