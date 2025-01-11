@@ -50,9 +50,6 @@ class Bot:
             if len(defense_actions_of_character) > 0:
                 print(f"Character is long blocking")
                 character_actions.append(defense_actions_of_character[0])
-            elif can_tag_close_enemy(character, game_message):
-                print(f"Character is short blocking")
-                character_actions += try_to_tag_close_enemy(character, game_message)
 
             if len(character_actions) == 0:
                 if self.current_state[character.id] == rcr.strategy_state.PICKUP_TRASH or self.current_state[character.id] == rcr.strategy_state.DEPOSIT_TRASH:
