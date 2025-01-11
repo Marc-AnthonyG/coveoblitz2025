@@ -1,6 +1,6 @@
 from typing import List, Tuple
 from game_message import *
-from util import is_not_in_enemies_zone, is_in_enemies_zone, manhattan_distance
+from util import is_not_in_enemies_zone, is_in_enemies_zone, a_star
 from collections import deque
 from retrieve_closest_resource import is_tile_empty, strategy_state, make_a_move
 
@@ -26,7 +26,9 @@ def pickupTrash(bot, character: Character, game_state: TeamGameState) -> Tuple[L
             return [GrabAction(character.id)], None
     
         if item.value < 0 and is_not_in_enemies_zone(game_state.teamIds, game_state.currentTeamId, item.position, game_state.teamZoneGrid):
-            distance = manhattan_distance(character.position, item.position)
+            distance = a_star(character.position, item.position, game_state.map.tiles)
+            if distance is None:
+                break
             if distance < best_trash_distance:
                 best_trash = item
                 best_trash_distance = distance
