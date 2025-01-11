@@ -1,6 +1,6 @@
+import heapq
 from typing import Any, List, Optional
 import game_message
-import heapq
 
 def is_in_our_zone(current_team_id: str, position: game_message.Position,  teamZoneGrid: list[list[str]]) -> bool:
     return teamZoneGrid[position.x][position.y] == current_team_id
