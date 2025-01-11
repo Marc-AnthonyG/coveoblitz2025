@@ -1,4 +1,5 @@
-from game_message import Position
+import heapq
+from game_message import *
 
 
 def is_in_our_zone(current_team_id: str, position: Position,  teamZoneGrid: list[list[str]]) -> bool:
@@ -10,7 +11,7 @@ def is_not_in_enemies_zone(teamIds: list[str], current_team_id: str, position: P
 def is_in_enemies_zone(teamIds: list[str], current_team_id: str, position: Position,  teamZoneGrid: list[list[str]]) -> bool:
     return teamZoneGrid[position.x][position.y] in teamIds and teamZoneGrid[position.x][position.y] != current_team_id
 
-def a_star(start: Position, goal: Position, tiles: List[List[TileType]]) -> int | None:
+def a_star(start: Position, goal: Position, tiles: list[list[TileType]]) -> int | None:
     open_list = []
     heapq.heappush(open_list, (0, start))  # (priority, position)
 
