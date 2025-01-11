@@ -41,3 +41,6 @@ def a_star(start: Position, goal: Position, tiles: List[List[TileType]]) -> int 
 
     # If the goal cannot be reached
     return None
+
+def manhattan_distance(pos1: Position, pos2: Position) -> int:
+    return abs(pos1.x - pos2.x) + abs(pos1.y - pos2.y)
