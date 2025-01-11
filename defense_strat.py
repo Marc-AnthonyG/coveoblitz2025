@@ -1,4 +1,7 @@
-from game_message import Character, TeamGameState, TileType
+import random
+
+from bot import DEFENCE_SKIN_INDEX
+from game_message import Character, TeamGameState, TileType, SetSkinAction, MoveToAction, Position
 from util import is_in_our_zone
 
 
@@ -39,4 +42,16 @@ def defense(character: Character, game_message: TeamGameState):
         new_y = closest_enemy.position.y + move[1]
 
         if game_message.map.tiles[new_x][new_y] != TileType.WALL:
-            possible_enemy_move.append((closest_enemy.position.x + move[0], closest_enemy.position.y + move[1]))
+            possible_enemy_move.append(Position(x=closest_enemy.position.x + move[0], y=closest_enemy.position.y + move[1]))
+
+
+    possible_our_move = []
+    for move in possible_enemy_move:
+        if abs(move.x - character.position.x) + abs(move.y - character.position.y) <= 1:
+            possible_our_move.append(move)
+
+    if len(possible_our_move) == 0:
+        return []
+    else:
+        random_move = possible_our_move[random.randint(0, len(possible_our_move) - 1)]
+        return [SetSkinAction(characterId=character.id, skinIndex=DEFENCE_SKIN_INDEX), MoveToAction(characterId=character.id, position=random_move)]
