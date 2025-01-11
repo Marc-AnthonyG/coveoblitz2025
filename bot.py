@@ -55,7 +55,16 @@ class Bot:
                 else:
                     move, next_state, target_position = rcr.make_a_move(self.current_state[character.id], character, game_message)
                     self.current_state[character.id] = next_state
+                    if (target_position is not None):
+                        item_to_remove : Optional[Item] = None
+                        for resource in game_message.items:
+                            if resource.position == target_position:
+                                item_to_remove = resource
+                        
+                        if item_to_remove is not None:
+                            game_message.items.remove(item_to_remove)
                     self.target_position_per_character[character.id] = target_position
+                            
                     character_actions.append(move)
 
             actions += character_actions
