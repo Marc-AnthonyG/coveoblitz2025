@@ -36,8 +36,8 @@ class Bot:
         """
         actions: List[Action] = []
 
-        defense_actions = defense_strat.long_distance_defence(game_message)
-
+        # defense_actions = defense_strat.long_distance_defence(game_message)
+        defense_actions = []
         for character in game_message.yourCharacters:
             character_actions: List[Action] = []
             if not character.alive:
