@@ -11,7 +11,7 @@ class strategy_state(Enum):
     
 def make_a_move(current_state : strategy_state, character : game_message.Character, game_message_: game_message.TeamGameState)->Tuple[Optional[game_message.Action], strategy_state]:
     if not character.alive:
-        return (None, strategy_state.RETRIEVE_CLOSEST_RESOURCE)
+        return (game_message.MoveDownAction(characterId=character.id), strategy_state.RETRIEVE_CLOSEST_RESOURCE)
     elif current_state.value == strategy_state.RETRIEVE_CLOSEST_RESOURCE.value:
         return retrieve_closest_resource(character, game_message_)
     elif current_state.value == strategy_state.STACK_RESOURCES.value:
