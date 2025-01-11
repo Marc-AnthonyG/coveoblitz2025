@@ -97,7 +97,7 @@ def get_exit_position(starting_position: Position, game_message: TeamGameState, 
     visited = {starting_position}
     directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 
-    while queue:
+    while len(queue) > 0:
         current_position, exit_position, dist = queue.popleft()
         x = current_position.x
         y = current_position.y

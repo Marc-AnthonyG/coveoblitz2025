@@ -5,6 +5,7 @@ from defense_strat import can_tag_close_enemy, try_to_tag_close_enemy
 from game_message import *
 from attack import choose_to_pickup_or_deposit
 import retrieve_closest_resource as rcr
+from util import find_first_move
 from weighted_map import WeightedMap, construct_weighted_map
 
 
@@ -82,8 +83,15 @@ class Bot:
                         
                         if item_to_remove is not None:
                             game_message.items.remove(item_to_remove)
+                    
                     self.target_position_per_character[character.id] = target_position
                     if move is not None:
+                        if move.type == "MOVE_TO":
+                            for enemy in game_message.otherCharacters:
+                                if game_message.teamZoneGrid[enemy.position.x][enemy.position.y] == enemy.teamId:
+                                    game_message.map.tiles[enemy.position.x][enemy.position.y] = TileType.WALL
+                            move.position = find_first_move(character.position, move.position, game_message.map.tiles)    
+                            
                         character_actions.append(move)
 
             actions += character_actions

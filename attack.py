@@ -64,7 +64,7 @@ def depositTrash(bot, character: Character, game_state: TeamGameState) -> Tuple[
     visited = set()
     visited.add((start_position.x, start_position.y))
 
-    while queue:
+    while len(queue) > 0:
         current_position = queue.popleft()
         if is_in_enemies_zone(game_state.teamIds, game_state.currentTeamId, current_position, game_state.teamZoneGrid) and is_tile_empty(current_position, game_state, character.id):
             return [MoveToAction(character.id, Position(current_position.x, current_position.y))], current_position
