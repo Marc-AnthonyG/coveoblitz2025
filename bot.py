@@ -1,6 +1,6 @@
-from typing import Dict
+from typing import Dict, List
 
-from defense_strat import should_defense, defense
+from defense_strat import can_tag_close_enemy, try_to_tag_close_enemy
 from game_message import *
 from attack import choose_to_pickup_or_deposit
 import retrieve_closest_resource as rcr
@@ -9,7 +9,7 @@ from weighted_map import WeightedMap, construct_weighted_map
 
 class Bot:
     def __init__(self):
-        self.current_state : Dict[str, rcr.strategy_state] = {}
+        self.current_state : Dict[str, Optional[rcr.strategy_state]] = {}
         self.weight_map: WeightedMap | None = None
         print("Initializing your super mega duper bot")
 
@@ -19,7 +19,7 @@ class Bot:
 
         if (len(self.current_state) == 0):
             for i, character in enumerate(game_message.yourCharacters):
-                if i % 2 == 0:
+                if i % 2 == 1:
                     self.current_state[character.id] = rcr.strategy_state.PICKUP_TRASH
                 else:
                     self.current_state[character.id] = rcr.strategy_state.RETRIEVE_CLOSEST_RESOURCE
@@ -28,13 +28,13 @@ class Bot:
         """
         Here is where the magic happens, for now the moves are not very good. I bet you can do better ;)
         """
-        actions = []
+        actions: List[Action] = []
 
         for character in game_message.yourCharacters:
-            character_actions = []
+            character_actions: List[Action] = []
 
-            if should_defense(character, game_message):
-                character_actions += defense(character, game_message)
+            if can_tag_close_enemy(character, game_message):
+                character_actions += try_to_tag_close_enemy(character, game_message)
 
             if len(character_actions) == 0:
                 if self.current_state[character.id] is None:
