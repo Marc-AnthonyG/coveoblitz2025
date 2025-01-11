@@ -37,7 +37,7 @@ def try_to_tag_close_enemy(character: Character, game_message: TeamGameState) ->
     if closest_enemy is None:
         return None
 
-    possible_move = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+    possible_move = [(0, 1), (0, -1), (1, 0), (-1, 0), (0, 0)]
 
     possible_enemy_move = []
     for move in possible_move:
