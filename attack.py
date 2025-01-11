@@ -5,7 +5,13 @@ from collections import deque
 from retrieve_closest_resource import is_tile_empty, strategy_state
 
 def choose_to_pickup_or_deposit(bot, character: Character, game_state: TeamGameState) -> Tuple[List[Action], Optional[Position]]:
-    if len(character.carriedItems) > 2 and character.carriedItems[-1].value < 0 and bot.current_state[character.id] == strategy_state.DEPOSIT_TRASH:
+    if len(character.carriedItems) >= game_state.constants.maxNumberOfItemsCarriedPerCharacter:
+        bot.current_state[character.id] = strategy_state.DEPOSIT_TRASH
+
+    if len(character.carriedItems) == 0:
+        bot.current_state[character.id] = strategy_state.PICKUP_TRASH
+
+    if bot.current_state[character.id] == strategy_state.DEPOSIT_TRASH and character.carriedItems[-1].value < 0:
         # choosing to deposit
         return depositTrash(bot, character, game_state)
     return pickupTrash(bot, character, game_state)
@@ -13,11 +19,12 @@ def choose_to_pickup_or_deposit(bot, character: Character, game_state: TeamGameS
 
 def pickupTrash(bot, character: Character, game_state: TeamGameState) -> Tuple[List[Action], Optional[Position]]:
     for item in game_state.items:
-        if item.position == character.position and item.value < 0:
+        if item.position == character.position and item.value < 0 and is_not_in_enemies_zone(game_state.teamIds, game_state.currentTeamId, item.position, game_state.teamZoneGrid):
             return [GrabAction(character.id)], None
+    
         if item.value < 0 and is_not_in_enemies_zone(game_state.teamIds, game_state.currentTeamId, item.position, game_state.teamZoneGrid):
-            return [SetSkinAction(character.id, 3),
-            MoveToAction(character.id, Position(item.position.x, item.position.y))], item.position
+            return [MoveToAction(character.id, Position(item.position.x, item.position.y))], item.position
+        
     if len(character.carriedItems) > 0 and character.carriedItems[-1].value < 0:
         bot.current_state[character.id] = strategy_state.DEPOSIT_TRASH
         return depositTrash(bot, character, game_state)
@@ -26,8 +33,7 @@ def pickupTrash(bot, character: Character, game_state: TeamGameState) -> Tuple[L
 
 def depositTrash(bot, character: Character, game_state: TeamGameState) -> Tuple[List[Action], Optional[Position]]:
     if is_in_enemies_zone(game_state.teamIds, game_state.currentTeamId, character.position, game_state.teamZoneGrid) and \
-    game_state.map.tiles[character.position.x][character.position.y] == TileType.EMPTY and \
-    is_tile_empty(character.position, game_state):
+        is_tile_empty(character.position, game_state):
         if len(character.carriedItems) == 1:
             bot.current_state[character.id] = strategy_state.PICKUP_TRASH
         return [DropAction(character.id)], None
@@ -57,5 +63,4 @@ def depositTrash(bot, character: Character, game_state: TeamGameState) -> Tuple[
             if (neighbor.x, neighbor.y) not in visited:
                 visited.add((neighbor.x, neighbor.y))
                 queue.append(neighbor)
-    bot.current_state[character.id] = strategy_state.PICKUP_TRASH
     return [], None
