@@ -1,6 +1,6 @@
 import random
 from game_message import *
-
+from attack import pickupTrash
 
 class Bot:
     def __init__(self):
@@ -12,19 +12,23 @@ class Bot:
         """
         actions = []
 
-        for character in game_message.yourCharacters:
-            actions.append(
-                random.choice(
-                    [
-                        MoveUpAction(characterId=character.id),
-                        MoveRightAction(characterId=character.id),
-                        MoveDownAction(characterId=character.id),
-                        MoveLeftAction(characterId=character.id),
-                        GrabAction(characterId=character.id),
-                        DropAction(characterId=character.id),
-                    ]
-                )
-            )
+
+        actions += pickupTrash(game_message.yourCharacters[0], game_state=game_message)
+        
+
+        # for character in game_message.yourCharacters:
+            # actions.append(
+            #     random.choice(
+            #         [
+            #             MoveUpAction(characterId=character.id),
+            #             MoveRightAction(characterId=character.id),
+            #             MoveDownAction(characterId=character.id),
+            #             MoveLeftAction(characterId=character.id),
+            #             GrabAction(characterId=character.id),
+            #             DropAction(characterId=character.id),
+            #         ]
+            #     )
+            # )
 
         # You can clearly do better than the random actions above! Have fun!
         return actions
