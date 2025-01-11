@@ -48,7 +48,7 @@ class Bot:
                 character_actions += try_to_tag_close_enemy(character, game_message)
 
             if len(character_actions) == 0:
-                if self.current_state[character.id] is None:
+                if self.current_state[character.id] == rcr.strategy_state.PICKUP_TRASH or self.current_state[character.id] == rcr.strategy_state.DEPOSIT_TRASH:
                     moves, target_position = choose_to_pickup_or_deposit(self, character, game_state=game_message)
                     character_actions+= moves
                     
