@@ -3,14 +3,19 @@ from typing import Dict
 from game_message import *
 from attack import choose_to_pickup_or_deposit
 import retrieve_closest_resource as rcr
+from weighted_map import WeightedMap, construct_weighted_map
 
 
 class Bot:
     def __init__(self):
         self.current_state : Dict[str, rcr.strategy_state] = {}
+        self.weight_map: WeightedMap | None = None
         print("Initializing your super mega duper bot")
 
     def get_next_move(self, game_message: TeamGameState):
+        if not self.weight_map:
+            self.weight_map = construct_weighted_map(game_message)
+
         if (len(self.current_state) == 0):
             for character in game_message.yourCharacters:
                 self.current_state[character.id] = rcr.strategy_state.RETRIEVE_CLOSEST_RESOURCE
