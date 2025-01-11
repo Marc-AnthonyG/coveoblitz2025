@@ -53,6 +53,8 @@ def try_to_tag_close_enemy(character: Character, game_message: TeamGameState) ->
         if abs(move.x - character.position.x) + abs(move.y - character.position.y) <= 1:
             possible_our_move.append(move)
 
+    print(f"Detected a close enemy from character {character.id}. Possible move: {possible_our_move}")
+
     if len(possible_our_move) == 0:
         return []
     else:
