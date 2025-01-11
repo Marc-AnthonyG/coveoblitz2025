@@ -28,7 +28,7 @@ def make_a_move(current_state : strategy_state, character : game_message.Charact
 
 def find_closest_resource(character : game_message.Character, game_message_: game_message.TeamGameState) -> Optional[game_message.Item]:
     current_position : game_message.Position = character.position
-    max_score : float = -1000000
+    min_dist : float = 1000000
     closest_resource : Optional[game_message.Item] = None
     for resource  in game_message_.items:
         if (resource.type[0] != "b"):
@@ -40,12 +40,9 @@ def find_closest_resource(character : game_message.Character, game_message_: gam
         dist : Optional[float] = find_distance(current_position, resource.position, game_message_)
         if (dist is None):
             continue
-        resource_value : int = resource.value
-        score : float = compute_resource_value(dist, resource_value, game_message_)
-        if (score > max_score):
-            max_score = dist
+        if (dist < min_dist):
+            min_dist = dist
             closest_resource = resource
-        
     return closest_resource
 
 def compute_resource_value(distance_to_car : float, resource_value : int, game_message_: game_message.TeamGameState)->float:
@@ -73,7 +70,7 @@ def is_tile_from_our_zone(position : game_message.Position, game_message_: game_
     return game_message_.teamZoneGrid[position.x][position.y] == game_message_.currentTeamId
      
 def find_distance(position1 : game_message.Position, position2 : game_message.Position, game_message_: game_message.TeamGameState)->Optional[float]:
-    return util.manhattan_distance(position1, position2)
+    return util.a_star(position1, position2, game_message_.map.tiles)
 
 def should_car_go_back_home(character : game_message.Character, game_message_: game_message.TeamGameState)->bool:
     if (character.numberOfCarriedItems == 0):
@@ -119,10 +116,11 @@ def find_closest_available_teamtile(character : game_message.Character, game_mes
             if not is_tile_from_our_zone(position=tile_position, game_message_=game_message_):
                 continue
             
-            dist : Optional[float] = find_distance(current_position, tile_position, game_message_)
-            if (dist is None):
+            if not is_tile_empty(tile_position, game_message_):
                 continue
-            if (dist < min_distance and is_tile_empty(tile_position, game_message_)):
+            
+            dist : Optional[float] = find_distance(current_position, tile_position, game_message_)
+            if (dist is not None and dist < min_distance):
                 min_distance = dist
                 closest_teamtile = tile_position
     return closest_teamtile
