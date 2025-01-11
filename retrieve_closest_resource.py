@@ -1,6 +1,5 @@
-from collections import deque
 from enum import Enum
-from typing import Optional, Tuple, Deque
+from typing import Optional, Tuple
 import game_message
 import util
 import random
@@ -81,30 +80,23 @@ def retrieve_closest_resource(character : game_message.Character, game_message_:
     return (None, strategy_state.PICKUP_TRASH, None)
 
 def find_closest_available_teamtile(character : game_message.Character, game_message_: game_message.TeamGameState)->Tuple[Optional[game_message.Position], float]:
-    start_position = character.position
-    queue: Deque[tuple[game_message.Position, int]]= deque([(start_position, 0)])  # (x, y, distance)
-    visited = set()
-    visited.add((start_position.x, start_position.y))
-
-    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
-
-    while queue:
-        position, dist = queue.popleft()
-        x = position.x
-        y = position.y
-
-        if util.is_in_our_zone(game_message_.currentTeamId, position, game_message_.teamZoneGrid) and is_tile_empty(position, game_message_, character.id):
-            return position, dist
-
-
-        for dx, dy in directions:
-            nx, ny = x + dx, y + dy
-            if game_message_.map.tiles[nx][ny] != game_message.TileType.WALL:
-                visited.add((nx, ny))
-                queue.append((game_message.Position(nx, ny), dist + 1))
-
-    return None, -1
-
+    current_position : game_message.Position = character.position
+    min_distance : float = 10000000
+    closest_teamtile : Optional[game_message.Position] = None
+    for x in range(len(game_message_.teamZoneGrid)):
+        for y in range(len(game_message_.teamZoneGrid[0])):
+            tile_position = game_message.Position(x,y)
+            if not is_tile_from_our_zone(position=tile_position, game_message_=game_message_):
+                continue
+            
+            if not is_tile_empty(tile_position, game_message_, character.id):
+                continue
+            
+            dist : Optional[float] = find_distance(current_position, tile_position, game_message_)
+            if (dist is not None and dist < min_distance):
+                min_distance = dist
+                closest_teamtile = tile_position
+    return closest_teamtile, min_distance
 
 def is_tile_empty(position : game_message.Position, game_message_: game_message.TeamGameState, id :str)->bool:
     is_wall : bool = game_message_.map.tiles[position.x][position.y].value == "WALL"

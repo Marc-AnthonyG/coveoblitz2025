@@ -37,7 +37,10 @@ class Bot:
         """
         actions: List[Action] = []
 
-        defense_actions = defense_strat.long_distance_defence(game_message)
+        defense_actions = []
+
+        if len(game_message.teamIds) == 2:
+            defense_actions = defense_strat.long_distance_defence(game_message)
 
         for character in game_message.yourCharacters:
             print(f"Choosing move for character id: {character.id}")
