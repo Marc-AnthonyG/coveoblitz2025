@@ -55,7 +55,7 @@ def construct_weighted_map(game_message: TeamGameState) -> WeightedMap:
     reachable_map_count = [[0] * height for _ in range(width)]
 
     for x in range(width):
-        for y in range(width):
+        for y in range(height):
             if map[x][y] != TileType.WALL:
                 reachable_tiles_number = len(bfs(x, y))
                 reachable_map_count[x][y] = reachable_tiles_number
