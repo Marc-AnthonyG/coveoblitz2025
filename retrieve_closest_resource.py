@@ -11,9 +11,9 @@ class strategy_state(Enum):
     DEPOSIT_TRASH = 5
         
     
-def make_a_move(current_state : strategy_state, character : game_message.Character, game_message_: game_message.TeamGameState)->Tuple[Optional[game_message.Action], strategy_state]:
+def make_a_move(current_state : strategy_state, character : game_message.Character, game_message_: game_message.TeamGameState)->Tuple[Optional[game_message.Action], strategy_state, Optional[game_message.Position]]:
     if not character.alive:
-        return (game_message.MoveDownAction(characterId=character.id), strategy_state.RETRIEVE_CLOSEST_RESOURCE)
+        return (game_message.MoveDownAction(characterId=character.id), strategy_state.RETRIEVE_CLOSEST_RESOURCE, None)
     elif current_state.value == strategy_state.RETRIEVE_CLOSEST_RESOURCE.value:
         return retrieve_closest_resource(character, game_message_)
     elif current_state.value == strategy_state.STACK_RESOURCES.value:
@@ -99,15 +99,15 @@ def should_car_go_back_home(character : game_message.Character, game_message_: g
         return True
     return False
 
-def retrieve_closest_resource(character : game_message.Character, game_message_: game_message.TeamGameState):
+def retrieve_closest_resource(character : game_message.Character, game_message_: game_message.TeamGameState) -> Tuple[Optional[game_message.Action], strategy_state, Optional[game_message.Position]]:
     item : Optional[game_message.Item] = find_closest_resource(character, game_message_)
     
     if item is not None:
         if item.position == character.position:
-            return game_message.GrabAction(characterId=character.id), strategy_state.STACK_RESOURCES
+            return game_message.GrabAction(characterId=character.id), strategy_state.STACK_RESOURCES, None
         else:
-            return game_message.MoveToAction(characterId=character.id, position=item.position), strategy_state.RETRIEVE_CLOSEST_RESOURCE
-    return (None, strategy_state.RETRIEVE_CLOSEST_RESOURCE)
+            return game_message.MoveToAction(characterId=character.id, position=item.position), strategy_state.RETRIEVE_CLOSEST_RESOURCE, item.position
+    return (None, strategy_state.RETRIEVE_CLOSEST_RESOURCE, None)
 
 def find_closest_available_teamtile(character : game_message.Character, game_message_: game_message.TeamGameState)->Optional[game_message.Position]:
     current_position : game_message.Position = character.position
@@ -137,14 +137,14 @@ def is_tile_empty(position : game_message.Position, game_message_: game_message.
             return False
     return True
 
-def bring_resource_to_base(character : game_message.Character, game_message_: game_message.TeamGameState):
+def bring_resource_to_base(character : game_message.Character, game_message_: game_message.TeamGameState) -> Tuple[Optional[game_message.Action], strategy_state, Optional[game_message.Position]]:
     position : Optional[game_message.Position] = find_closest_available_teamtile(character, game_message_)
     if position is not None:
         if (position == character.position):
             if (character.numberOfCarriedItems == 1):
-                return game_message.DropAction(characterId=character.id), strategy_state.RETRIEVE_CLOSEST_RESOURCE            
-            return game_message.DropAction(characterId=character.id), strategy_state.BRING_RESOURCE_TO_BASE
+                return game_message.DropAction(characterId=character.id), strategy_state.RETRIEVE_CLOSEST_RESOURCE, None          
+            return game_message.DropAction(characterId=character.id), strategy_state.BRING_RESOURCE_TO_BASE, None
         else:
-            return game_message.MoveToAction(characterId=character.id, position=position), strategy_state.BRING_RESOURCE_TO_BASE
+            return game_message.MoveToAction(characterId=character.id, position=position), strategy_state.BRING_RESOURCE_TO_BASE, position
     else:
-        return (None, strategy_state.BRING_RESOURCE_TO_BASE)
+        return (None, strategy_state.BRING_RESOURCE_TO_BASE, None)

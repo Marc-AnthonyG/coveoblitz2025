@@ -9,14 +9,19 @@ from weighted_map import WeightedMap, construct_weighted_map
 
 class Bot:
     def __init__(self):
-        self.current_state : Dict[str, Optional[rcr.strategy_state]] = {}
-        self.weight_map: WeightedMap | None = None
+        self.current_state : Dict[str, Optional[rcr.strategy_state]] = dict()
+        self.target_position_per_character : Dict[str, Optional[Position]] = dict()
+        self.weight_map: Optional[WeightedMap] = None
         print("Initializing your super mega duper bot")
 
     def get_next_move(self, game_message: TeamGameState):
         if not self.weight_map:
             self.weight_map = construct_weighted_map(game_message)
 
+        if (len(self.target_position_per_character) == 0):
+            for character in game_message.yourCharacters:
+                self.target_position_per_character[character.id] = None
+                
         if (len(self.current_state) == 0):
             for i, character in enumerate(game_message.yourCharacters):
                 if i % 2 == 1:
@@ -38,10 +43,13 @@ class Bot:
 
             if len(character_actions) == 0:
                 if self.current_state[character.id] is None:
-                    character_actions += choose_to_pickup_or_deposit(self, character, game_state=game_message)
+                    moves, target_position = choose_to_pickup_or_deposit(self, character, game_state=game_message)
+                    character_actions+= moves
+                    
                 else:
-                    move, next_state = rcr.make_a_move(self.current_state[character.id], character, game_message)
+                    move, next_state, target_position = rcr.make_a_move(self.current_state[character.id], character, game_message)
                     self.current_state[character.id] = next_state
+                    self.target_position_per_character[character.id] = target_position
                     character_actions.append(move)
 
             actions += character_actions
