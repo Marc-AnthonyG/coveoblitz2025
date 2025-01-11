@@ -1,6 +1,6 @@
 from typing import List, Tuple
 from game_message import *
-from util import is_not_in_enemies_zone, is_in_enemies_zone
+from util import is_not_in_enemies_zone, is_in_enemies_zone, manhattan_distance
 from collections import deque
 from retrieve_closest_resource import is_tile_empty, strategy_state, make_a_move
 
@@ -18,12 +18,21 @@ def choose_to_pickup_or_deposit(bot, character: Character, game_state: TeamGameS
 
 
 def pickupTrash(bot, character: Character, game_state: TeamGameState) -> Tuple[List[Action], Optional[Position]]:
+    best_trash = None
+    best_trash_distance = 100000
+
     for item in game_state.items:
         if item.position == character.position and item.value < 0 and is_not_in_enemies_zone(game_state.teamIds, game_state.currentTeamId, item.position, game_state.teamZoneGrid):
             return [GrabAction(character.id)], None
     
         if item.value < 0 and is_not_in_enemies_zone(game_state.teamIds, game_state.currentTeamId, item.position, game_state.teamZoneGrid):
-            return [MoveToAction(character.id, Position(item.position.x, item.position.y))], item.position
+            distance = manhattan_distance(character.position, item.position)
+            if distance < best_trash_distance:
+                best_trash = item
+                best_trash_distance = distance
+
+    if best_trash is not None:
+        return [MoveToAction(character.id, best_trash.position)], best_trash.position
         
     if len(character.carriedItems) > 0 and character.carriedItems[-1].value < 0:
         bot.current_state[character.id] = strategy_state.DEPOSIT_TRASH
