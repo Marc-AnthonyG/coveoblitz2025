@@ -110,7 +110,7 @@ def get_exit_position(starting_position: Position, game_message: TeamGameState, 
             if game_message.map.tiles[nx][ny] != TileType.WALL:
                 visited.add(Position(nx, ny))
                 if game_message.teamZoneGrid[nx][ny] != starting_team_id:
-                    queue.append((Position(nx, ny), current_position, dist+1))
+                    return Position(nx, ny), dist+1
                 else:
                     queue.append((Position(nx, ny), exit_position, dist+1))
 
