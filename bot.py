@@ -34,7 +34,7 @@ class Bot:
             character_actions = []
 
             if should_defense(character, game_message):
-                character_actions.append(defense(character, game_message))
+                character_actions += defense(character, game_message)
 
             if len(character_actions) == 0:
                 if self.current_state[character.id] is None:
