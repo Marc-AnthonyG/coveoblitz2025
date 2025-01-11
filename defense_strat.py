@@ -60,7 +60,7 @@ def try_to_tag_close_enemy(character: Character, game_message: TeamGameState) ->
         return [SetSkinAction(characterId=character.id, skinIndex=DEFENCE_SKIN_INDEX), MoveToAction(characterId=character.id, position=random_move)]
 
 
-def create_pair_of_intercepter(game_message: TeamGameState) -> list[Action]:
+def long_distance_defence(game_message: TeamGameState) -> list[Action]:
     """
     This function create a pair of intercepter
     """
@@ -73,7 +73,7 @@ def create_pair_of_intercepter(game_message: TeamGameState) -> list[Action]:
     list_of_actions = []
 
     for enemy in enemy_with_resource_in_our_zone:
-        exit_position, dist = get_exit_position(enemy.position, game_message, game_message.currentTeamId)
+        exit_position, dist = get_exit_position(enemy.position, game_message, enemy.teamId)
         if exit_position is None:
             continue
 

@@ -1,5 +1,6 @@
 from typing import Dict, List
 
+import defense_strat
 from defense_strat import can_tag_close_enemy, try_to_tag_close_enemy
 from game_message import *
 from attack import choose_to_pickup_or_deposit
@@ -35,9 +36,14 @@ class Bot:
         """
         actions: List[Action] = []
 
+        defense_actions = defense_strat.long_distance_defence(game_message)
+
         for character in game_message.yourCharacters:
             character_actions: List[Action] = []
 
+            defense_actions_of_character = [action for action in defense_actions if action.characterId == character.id]
+            if len(defense_actions_of_character) > 0:
+                character_actions += defense_actions_of_character
             if can_tag_close_enemy(character, game_message):
                 character_actions += try_to_tag_close_enemy(character, game_message)
 

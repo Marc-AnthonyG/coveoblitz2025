@@ -126,6 +126,7 @@ class TeamGameState:
 
 class Action:
     type: str
+    characterId: str
 
 
 @dataclass_json
