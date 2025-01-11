@@ -9,7 +9,7 @@ from weighted_map import WeightedMap, construct_weighted_map
 
 class Bot:
     def __init__(self):
-        self.current_state : Dict[str, rcr.strategy_state] = {}
+        self.current_state : Dict[str, Optional[rcr.strategy_state]] = {}
         self.weight_map: WeightedMap | None = None
         print("Initializing your super mega duper bot")
 
@@ -19,7 +19,7 @@ class Bot:
 
         if (len(self.current_state) == 0):
             for i, character in enumerate(game_message.yourCharacters):
-                if i % 2 == 0:
+                if i % 2 == 1:
                     self.current_state[character.id] = None
                 else:
                     self.current_state[character.id] = rcr.strategy_state.RETRIEVE_CLOSEST_RESOURCE

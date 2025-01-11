@@ -17,6 +17,7 @@ def pickupTrash(character: Character, game_state: TeamGameState) -> list[Action]
         if item.value < 0 and is_not_in_enemies_zone(game_state.teamIds, game_state.currentTeamId, item.position, game_state.teamZoneGrid):
             return [SetSkinAction(character.id, 3),
             MoveToAction(character.id, Position(item.position.x, item.position.y))]
+    return []
 
 
 def depositTrash(character: Character, game_state: TeamGameState) -> list[Action]:
