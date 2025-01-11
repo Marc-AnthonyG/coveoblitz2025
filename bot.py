@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 
 from defense_strat import can_tag_close_enemy, try_to_tag_close_enemy
 from game_message import *
@@ -28,10 +28,10 @@ class Bot:
         """
         Here is where the magic happens, for now the moves are not very good. I bet you can do better ;)
         """
-        actions = []
+        actions: List[Action] = []
 
         for character in game_message.yourCharacters:
-            character_actions = []
+            character_actions: List[Action] = []
 
             if can_tag_close_enemy(character, game_message):
                 character_actions += try_to_tag_close_enemy(character, game_message)

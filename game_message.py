@@ -59,6 +59,7 @@ class Item:
 @dataclass_json
 @dataclass
 class Character:
+
     """Character in the game."""
 
     id: str
@@ -73,6 +74,9 @@ class Character:
     """Items carried by the character."""
     numberOfCarriedItems: int
     """Number of items currently carried by the character."""
+
+    def has_item(self):
+        return len(self.carriedItems) > 0
 
 
 @dataclass_json
