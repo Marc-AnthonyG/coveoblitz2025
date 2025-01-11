@@ -24,7 +24,7 @@ def make_a_move(current_state : strategy_state, character : game_message.Charact
 
 
 
-def find_closest_resource(character : game_message.Character, game_message_: game_message.TeamGameState) -> Optional[game_message.Item]:
+def find_closest_resource(character : game_message.Character, game_message_: game_message.TeamGameState) -> Tuple[Optional[game_message.Item],float]:
     current_position : game_message.Position = character.position
     min_dist : float = 1000000
     closest_resource : Optional[game_message.Item] = None
@@ -41,7 +41,7 @@ def find_closest_resource(character : game_message.Character, game_message_: gam
         if (dist < min_dist):
             min_dist = dist
             closest_resource = resource
-    return closest_resource
+    return closest_resource, min_dist
 
 def compute_resource_value(distance_to_car : float, resource_value : int, game_message_: game_message.TeamGameState)->float:
     return -distance_to_car
@@ -58,26 +58,19 @@ def should_car_go_back_home(character : game_message.Character, game_message_: g
     if (character.numberOfCarriedItems == game_message_.constants.maxNumberOfItemsCarriedPerCharacter):
         return True
     
-    home_tile = find_closest_available_teamtile(character, game_message_)
-    closest_resource = find_closest_resource(character, game_message_)
+    home_tile, dist_home = find_closest_available_teamtile(character, game_message_)
+    closest_resource, dist_resource = find_closest_resource(character, game_message_)
     
     if (closest_resource is None):
         return True
     elif (home_tile is None):
         return False
-    dist_home = find_distance(character.position, home_tile, game_message_)
-    if dist_home is None:
-        return False
-    dist_resource = find_distance(character.position, home_tile, game_message_)
-    if dist_resource is None:
-        return True
-     
     elif (dist_home < dist_resource):
         return True
     return False
 
 def retrieve_closest_resource(character : game_message.Character, game_message_: game_message.TeamGameState) -> Tuple[Optional[game_message.Action], strategy_state, Optional[game_message.Position]]:
-    item : Optional[game_message.Item] = find_closest_resource(character, game_message_)
+    item, _ = find_closest_resource(character, game_message_)
     
     if item is not None:
         if item.position == character.position:
@@ -86,7 +79,7 @@ def retrieve_closest_resource(character : game_message.Character, game_message_:
             return game_message.MoveToAction(characterId=character.id, position=item.position), strategy_state.RETRIEVE_CLOSEST_RESOURCE, item.position
     return (None, strategy_state.PICKUP_TRASH, None)
 
-def find_closest_available_teamtile(character : game_message.Character, game_message_: game_message.TeamGameState)->Optional[game_message.Position]:
+def find_closest_available_teamtile(character : game_message.Character, game_message_: game_message.TeamGameState)->Tuple[Optional[game_message.Position], float]:
     current_position : game_message.Position = character.position
     min_distance : float = 10000000
     closest_teamtile : Optional[game_message.Position] = None
@@ -103,7 +96,7 @@ def find_closest_available_teamtile(character : game_message.Character, game_mes
             if (dist is not None and dist < min_distance):
                 min_distance = dist
                 closest_teamtile = tile_position
-    return closest_teamtile
+    return closest_teamtile, min_distance
 
 def is_tile_empty(position : game_message.Position, game_message_: game_message.TeamGameState, id :str)->bool:
     is_wall : bool = game_message_.map.tiles[position.x][position.y].value == "WALL"
@@ -121,7 +114,7 @@ def is_tile_empty(position : game_message.Position, game_message_: game_message.
     return True
 
 def bring_resource_to_base(character : game_message.Character, game_message_: game_message.TeamGameState) -> Tuple[Optional[game_message.Action], strategy_state, Optional[game_message.Position]]:
-    position : Optional[game_message.Position] = find_closest_available_teamtile(character, game_message_)
+    position , _ = find_closest_available_teamtile(character, game_message_)
     if position is not None:
         if (position == character.position):
             if (character.numberOfCarriedItems == 1):
