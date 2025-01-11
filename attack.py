@@ -2,14 +2,14 @@ from typing import List, Tuple
 from game_message import *
 from util import is_not_in_enemies_zone, is_in_enemies_zone
 from collections import deque
-from retrieve_closest_resource import is_tile_empty, strategy_state
+from retrieve_closest_resource import is_tile_empty, strategy_state, make_a_move
 
 def choose_to_pickup_or_deposit(bot, character: Character, game_state: TeamGameState) -> Tuple[List[Action], Optional[Position]]:
     if len(character.carriedItems) >= game_state.constants.maxNumberOfItemsCarriedPerCharacter:
         bot.current_state[character.id] = strategy_state.DEPOSIT_TRASH
 
-    if len(character.carriedItems) == 0:
-        bot.current_state[character.id] = strategy_state.PICKUP_TRASH
+    if len(character.carriedItems) == 0 and bot.current_state[character.id] == strategy_state.DEPOSIT_TRASH:
+        bot.current_state[character.id] = strategy_state.RETRIEVE_CLOSEST_RESOURCE
 
     if bot.current_state[character.id] == strategy_state.DEPOSIT_TRASH and character.carriedItems[-1].value < 0:
         # choosing to deposit
@@ -28,6 +28,10 @@ def pickupTrash(bot, character: Character, game_state: TeamGameState) -> Tuple[L
     if len(character.carriedItems) > 0 and character.carriedItems[-1].value < 0:
         bot.current_state[character.id] = strategy_state.DEPOSIT_TRASH
         return depositTrash(bot, character, game_state)
+    move, state, target_position = make_a_move(strategy_state.RETRIEVE_CLOSEST_RESOURCE, character, game_state)
+    bot.current_state[character.id] = state
+    if move is not None:
+        return [move], target_position
     return [], None
 
 
@@ -35,7 +39,7 @@ def depositTrash(bot, character: Character, game_state: TeamGameState) -> Tuple[
     if is_in_enemies_zone(game_state.teamIds, game_state.currentTeamId, character.position, game_state.teamZoneGrid) and \
         is_tile_empty(character.position, game_state):
         if len(character.carriedItems) == 1:
-            bot.current_state[character.id] = strategy_state.PICKUP_TRASH
+            bot.current_state[character.id] = strategy_state.RETRIEVE_CLOSEST_RESOURCE
         return [DropAction(character.id)], None
 
 

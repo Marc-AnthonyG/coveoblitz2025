@@ -36,11 +36,13 @@ class Bot:
         """
         actions: List[Action] = []
 
-        defense_actions = defense_strat.long_distance_defence(game_message)
-
+        # defense_actions = defense_strat.long_distance_defence(game_message)
+        defense_actions = []
         for character in game_message.yourCharacters:
             character_actions: List[Action] = []
-
+            if not character.alive:
+                self.current_state[character.id] = rcr.strategy_state.PICKUP_TRASH
+                continue
             defense_actions_of_character = [action for action in defense_actions if action.characterId == character.id]
             if len(defense_actions_of_character) > 0:
                 character_actions += defense_actions_of_character
@@ -51,10 +53,12 @@ class Bot:
                 if self.current_state[character.id] == rcr.strategy_state.PICKUP_TRASH or self.current_state[character.id] == rcr.strategy_state.DEPOSIT_TRASH:
                     moves, target_position = choose_to_pickup_or_deposit(self, character, game_state=game_message)
                     character_actions+= moves
-                    
+                                        
                 else:
                     move, next_state, target_position = rcr.make_a_move(self.current_state[character.id], character, game_message)
                     self.current_state[character.id] = next_state
+                    if move is None:
+                        choose_to_pickup_or_deposit(self, character, game_message)
                     if (target_position is not None):
                         item_to_remove : Optional[Item] = None
                         for resource in game_message.items:
