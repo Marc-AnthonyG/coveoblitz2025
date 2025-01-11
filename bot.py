@@ -45,8 +45,8 @@ class Bot:
                 continue
             defense_actions_of_character = [action for action in defense_actions if action.characterId == character.id]
             if len(defense_actions_of_character) > 0:
-                character_actions += defense_actions_of_character
-            if can_tag_close_enemy(character, game_message):
+                character_actions += defense_actions_of_character[0]
+            elif can_tag_close_enemy(character, game_message):
                 character_actions += try_to_tag_close_enemy(character, game_message)
 
             if len(character_actions) == 0:
