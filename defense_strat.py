@@ -75,7 +75,7 @@ def long_distance_defence(game_message: TeamGameState) -> list[Action]:
     list_of_actions = []
 
     for enemy in enemy_with_resource_in_our_zone:
-        exit_position, dist = get_exit_position(enemy.position, game_message, enemy.teamId)
+        exit_position, dist = get_exit_position(enemy.position, game_message)
         if exit_position is None:
             continue
 
@@ -88,7 +88,7 @@ def long_distance_defence(game_message: TeamGameState) -> list[Action]:
 
     return list_of_actions
 
-def get_exit_position(starting_position: Position, game_message: TeamGameState, goalTeamId: str, ) -> tuple[Optional[Position], int]:
+def get_exit_position(starting_position: Position, game_message: TeamGameState) -> tuple[Optional[Position], int]:
     """
     Return the exit position of the bot
     """
@@ -103,7 +103,7 @@ def get_exit_position(starting_position: Position, game_message: TeamGameState, 
         y = current_position.y
 
         # Stop searching when you get to enemy zone
-        if game_message.teamZoneGrid[x][y] == goalTeamId:
+        if game_message.teamZoneGrid[x][y] != game_message.currentTeamId:
             return exit_position, dist
 
         # Explore adjacent tiles
